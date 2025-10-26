@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Spots • Naadir's London Bites</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header header-list">
+            <a href="index.html" class="back-link">← Back</a>
+            <h1 class="title">☕ Coffee</h1>
+        </header>
+        
+        <div class="filters">
+            <div class="filter-group">
+                <label for="borough-filter">Filter by borough:</label>
+                <select id="borough-filter" class="filter-select">
+                    <option value="all">All Boroughs</option>
+                    <option value="hackney">Hackney</option>
+                    <option value="tower-hamlets">Tower Hamlets</option>
+                    <option value="islington">Islington</option>
+                    <option value="southwark">Southwark</option>
+                    <option value="camden">Camden</option>
+                </select>
+            </div>
+            
+            <div class="filter-tags">
+                <button class="tag-filter" data-tag="outdoor">Outdoor Seating</button>
+                <button class="tag-filter" data-tag="late">Open Late</button>
+                <button class="tag-filter" data-tag="cash">Cash Only</button>
+            </div>
+        </div>
+        
+        <div class="share-section">
+            <button id="share-btn" class="share-button">Share this list 🔗</button>
+        </div>
+        
+        <div class="list" id="coffee-list">
+            <!-- Sample entries - these would typically come from data -->
+            <div class="list-item" data-borough="hackney" data-tags="outdoor">
+                <h3 class="item-name">Pavilion Cafe</h3>
+                <p class="item-location">Victoria Park, Hackney</p>
+                <p class="item-description">Best flat white near London Fields, perfect for morning strolls</p>
+                <div class="item-tags">
+                    <span class="tag">Outdoor Seating</span>
+                </div>
+                <a href="https://maps.google.com/?q=Pavilion+Cafe+Victoria+Park+London" target="_blank" class="map-link">📍 View on Maps</a>
+            </div>
+            
+            <div class="list-item" data-borough="islington" data-tags="">
+                <h3 class="item-name">Smokey Beans</h3>
+                <p class="item-location">Angel, Islington</p>
+                <p class="item-description">Tiny space, huge flavour. Their flat white is legendary</p>
+                <div class="item-tags">
+                </div>
+                <a href="https://maps.google.com/?q=Smokey+Beans+Angel+London" target="_blank" class="map-link">📍 View on Maps</a>
+            </div>
+            
+            <div class="list-item" data-borough="tower-hamlets" data-tags="late,outdoor">
+                <h3 class="item-name">Dark Arts Coffee</h3>
+                <p class="item-location">Whitechapel, Tower Hamlets</p>
+                <p class="item-description">Strong brews and cool vibes in East London's heart</p>
+                <div class="item-tags">
+                    <span class="tag">Open Late</span>
+                    <span class="tag">Outdoor Seating</span>
+                </div>
+                <a href="https://maps.google.com/?q=Dark+Arts+Coffee+Whitechapel+London" target="_blank" class="map-link">📍 View on Maps</a>
+            </div>
+            
+            <div class="list-item" data-borough="southwark" data-tags="outdoor">
+                <h3 class="item-name">40FT Brewery</h3>
+                <p class="item-location">Bermondsey, Southwark</p>
+                <p class="item-description">Coffee by day, craft beer by night. Amazing courtyard</p>
+                <div class="item-tags">
+                    <span class="tag">Outdoor Seating</span>
+                </div>
+                <a href="https://maps.google.com/?q=40FT+Brewery+Bermondsey+London" target="_blank" class="map-link">📍 View on Maps</a>
+            </div>
+            
+            <div class="list-item" data-borough="camden" data-tags="cash">
+                <h3 class="item-name">Lantana</h3>
+                <p class="item-location">Fitzrovia, Camden</p>
+                <p class="item-description">Aussie-style brunch spot with excellent coffee</p>
+                <div class="item-tags">
+                    <span class="tag">Cash Only</span>
+                </div>
+                <a href="https://maps.google.com/?q=Lantana+Fitzrovia+London" target="_blank" class="map-link">📍 View on Maps</a>
+            </div>
+            
+            <div class="list-item" data-borough="hackney" data-tags="late">
+                <h3 class="item-name">Climpson & Sons</h3>
+                <p class="item-location">Broadway Market, Hackney</p>
+                <p class="item-description">The OG of East London coffee. Saturday market vibes</p>
+                <div class="item-tags">
+                    <span class="tag">Open Late</span>
+                </div>
+                <a href="https://maps.google.com/?q=Climpson+Sons+Broadway+Market+London" target="_blank" class="map-link">📍 View on Maps</a>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <p><a href="index.html">← Back to Home</a></p>
+        </footer>
+    </div>
+    
+    <script src="js/filter.js"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shawarma Spots • Naadir's London Bites</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header header-list">
+            <a href="index.html" class="back-link">← Back</a>
+            <h1 class="title">🌯 Shawarma</h1>
+        </header>
+        
+        <div class="filters">
+            <div class="filter-group">
+                <label for="borough-filter">Filter by borough:</label>
+                <select id="borough-filter" class="filter-select">
+                    <option value="all">All Boroughs</option>
+                    <option value="tower-hamlets">Tower Hamlets</option>
+                    <option value="westminster">Westminster</option>
+                    <option value="islington">Islington</option>
+                    <option value="camden">Camden</option>
+                    <option value="kensington">Kensington & Chelsea</option>
+                </select>
+            </div>
+            
+            <div class="filter-tags">
+                <button class="tag-filter" data-tag="halal">Halal</button>
+                <button class="tag-filter" data-tag="late">Open Late</button>
+                <button class="tag-filter" data-tag="outdoor">Outdoor Seating</button>
+                <button class="tag-filter" data-tag="cash">Cash Only</button>
+            </div>
+        </div>
+        
+        <div class="share-section">
+            <button id="share-btn" class="share-button">Share this list 🔗</button>
+        </div>
+        
+        <div class="list" id="shawarma-list">
+            <!-- Sample entries -->
+            <div class="list-item" data-borough="tower-hamlets" data-tags="halal,late,cash">
+                <h3 class="item-name">Tayyabs</h3>
+                <p class="item-location">Whitechapel, Tower Hamlets</p>
+                <p class="item-description">Late-night lamb wrap heaven. Always packed, always worth it</p>
+                <div class="item-tags">
+                    <span class="tag">Halal</span>
+                    <span class="tag">Open Late</span>
+                    <span class="tag">Cash Only</span>
+                </div>
+                <a href="https://maps.google.com/?q=Tayyabs+Whitechapel+London" target="_blank" class="map-link">📍 View on Maps</a>
+            </div>
+            
+            <div class="list-item" data-borough="westminster" data-tags="halal,late">
+                <h3 class="item-name">Maroush</h3>
+                <p class="item-location">Edgware Road, Westminster</p>
+                <p class="item-description">The gold standard of Lebanese shawarma in London</p>
+                <div class="item-tags">
+                    <span class="tag">Halal</span>
+                    <span class="tag">Open Late</span>
+                </div>
+                <a href="https://maps.google.com/?q=Maroush+Edgware+Road+London" target="_blank" class="map-link">📍 View on Maps</a>
+            </div>
+            
+            <div class="list-item" data-borough="islington" data-tags="halal">
+                <h3 class="item-name">Petek</h3>
+                <p class="item-location">Angel, Islington</p>
+                <p class="item-description">Turkish grill masters. Their chicken shawarma is unmatched</p>
+                <div class="item-tags">
+                    <span class="tag">Halal</span>
+                </div>
+                <a href="https://maps.google.com/?q=Petek+Angel+London" target="_blank" class="map-link">📍 View on Maps</a>
+            </div>
+            
+            <div class="list-item" data-borough="tower-hamlets" data-tags="halal,late,outdoor">
+                <h3 class="item-name">Lahore Kebab House</h3>
+                <p class="item-location">Whitechapel, Tower Hamlets</p>
+                <p class="item-description">No frills, all flavour. A true East London institution</p>
+                <div class="item-tags">
+                    <span class="tag">Halal</span>
+                    <span class="tag">Open Late</span>
+                    <span class="tag">Outdoor Seating</span>
+                </div>
+                <a href="https://maps.google.com/?q=Lahore+Kebab+House+Whitechapel+London" target="_blank" class="map-link">📍 View on Maps</a>
+            </div>
+            
+            <div class="list-item" data-borough="camden" data-tags="halal,cash">
+                <h3 class="item-name">Diyarbakir Kitchen</h3>
+                <p class="item-location">Stoke Newington, Camden</p>
+                <p class="item-description">Kurdish kitchen serving incredible wraps. Cash only, no compromise</p>
+                <div class="item-tags">
+                    <span class="tag">Halal</span>
+                    <span class="tag">Cash Only</span>
+                </div>
+                <a href="https://maps.google.com/?q=Diyarbakir+Kitchen+Stoke+Newington+London" target="_blank" class="map-link">📍 View on Maps</a>
+            </div>
+            
+            <div class="list-item" data-borough="kensington" data-tags="halal,outdoor">
+                <h3 class="item-name">Comptoir Libanais</h3>
+                <p class="item-location">South Kensington</p>
+                <p class="item-description">Modern Lebanese with amazing mezze and outdoor tables</p>
+                <div class="item-tags">
+                    <span class="tag">Halal</span>
+                    <span class="tag">Outdoor Seating</span>
+                </div>
+                <a href="https://maps.google.com/?q=Comptoir+Libanais+South+Kensington+London" target="_blank" class="map-link">📍 View on Maps</a>
+            </div>
+            
+            <div class="list-item" data-borough="westminster" data-tags="halal,late,cash">
+                <h3 class="item-name">Al Arez</h3>
+                <p class="item-location">Edgware Road, Westminster</p>
+                <p class="item-description">Hidden gem with proper Lebanese hospitality and massive portions</p>
+                <div class="item-tags">
+                    <span class="tag">Halal</span>
+                    <span class="tag">Open Late</span>
+                    <span class="tag">Cash Only</span>
+                </div>
+                <a href="https://maps.google.com/?q=Al+Arez+Edgware+Road+London" target="_blank" class="map-link">📍 View on Maps</a>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <p><a href="index.html">← Back to Home</a></p>
+        </footer>
+    </div>
+    
+    <script src="js/filter.js"></script>
+</body>
+</html>
