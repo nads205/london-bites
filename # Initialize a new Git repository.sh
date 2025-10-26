@@ -29,6 +29,6 @@ git commit -m "Add .gitignore"
 gh repo create naadir-london-bites --public --source=. --remote=origin --push
 
 # OR manually connect to GitHub (after creating repo on GitHub.com)
-git remote add origin https://github.com/YOUR_USERNAME/naadir-london-bites.git
+git remote add origin https://github.com/nads205/london-bites.git
 git branch -M main
 git push -u origin main
