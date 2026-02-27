@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security Report - coffeeandshwarma | Arko</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --accent:#00FF85;
+  --accent-rgb:0,255,133;
+  --purple:#818CF8;
+  --purple-rgb:129,140,248;
+  --amber:#F59E0B;
+  --amber-rgb:245,158,11;
+  --red:#EF4444;
+  --red-rgb:239,68,68;
+  --cyan:#22D3EE;
+  --bg:#030711;
+  --card:rgba(255,255,255,0.03);
+  --card-border:rgba(255,255,255,0.06);
+  --card-hover:rgba(255,255,255,0.06);
+  --text:#E2E8F0;
+  --text-muted:#94A3B8;
+  --text-dim:#64748B;
+  --radius:14px;
+  --mono:'Consolas','Courier New',monospace;
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  position:relative;
+  overflow-x:hidden;
+}
+
+/* Mesh background */
+.mesh{position:fixed;inset:0;z-index:0;filter:blur(120px);opacity:0.4;pointer-events:none}
+.blob{position:absolute;border-radius:50%}
+.blob-1{width:60vw;height:60vw;background:radial-gradient(circle,rgba(var(--accent-rgb),0.25),transparent);top:-20%;left:-15%}
+.blob-2{width:45vw;height:45vw;background:radial-gradient(circle,rgba(var(--purple-rgb),0.2),transparent);bottom:-15%;right:-10%}
+.blob-3{width:30vw;height:30vw;background:radial-gradient(circle,rgba(var(--amber-rgb),0.08),transparent);top:40%;left:50%}
+
+/* Noise overlay */
+.noise{position:fixed;inset:0;z-index:1;opacity:0.03;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+.container{max-width:900px;margin:0 auto;padding:40px 24px;position:relative;z-index:2}
+
+/* Header */
+.report-header{padding:48px 0 32px;text-align:center;position:relative;z-index:2}
+.report-header svg{filter:drop-shadow(0 0 20px rgba(var(--accent-rgb),0.15));margin-bottom:16px}
+.report-project{font-family:var(--mono);font-size:13px;color:var(--text-muted);letter-spacing:0.03em}
+.report-date{font-size:12px;color:var(--text-dim);margin-top:4px}
+.header-line{width:80px;height:2px;background:linear-gradient(90deg,var(--accent),var(--purple));margin:20px auto 0;border-radius:2px}
+
+/* Stats bar */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{
+  background:var(--card);
+  border:1px solid var(--card-border);
+  border-radius:var(--radius);
+  padding:20px;
+  text-align:center;
+  backdrop-filter:blur(20px);
+  position:relative;
+  overflow:hidden;
+}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent)}
+.stat-value{font-size:28px;font-weight:700}
+.stat-value.critical{color:var(--red)}
+.stat-value.accent{color:var(--accent)}
+.stat-value.amber{color:var(--amber)}
+.stat-value.purple{color:var(--purple)}
+.stat-label{font-family:var(--mono);font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;margin-top:6px}
+
+/* Sections */
+section{
+  background:var(--card);
+  border:1px solid var(--card-border);
+  border-radius:var(--radius);
+  padding:28px;
+  margin-bottom:16px;
+  backdrop-filter:blur(20px);
+  position:relative;
+  overflow:hidden;
+}
+section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 5%,rgba(var(--accent-rgb),0.1) 30%,rgba(var(--purple-rgb),0.06) 70%,transparent 95%)}
+h2{font-size:16px;font-weight:600;color:var(--accent);margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);letter-spacing:0.01em}
+h3{font-size:14px;font-weight:600;color:var(--text);margin-bottom:10px}
+
+/* Tags */
+.tag{display:inline-block;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:500;background:rgba(255,255,255,0.05);color:var(--text-muted);margin:2px 4px 2px 0;border:1px solid rgba(255,255,255,0.06)}
+.tag-risk{background:rgba(var(--red-rgb),0.08);color:var(--red);border-color:rgba(var(--red-rgb),0.15)}
+.tag-compliance{background:rgba(var(--purple-rgb),0.08);color:var(--purple);border-color:rgba(var(--purple-rgb),0.15)}
+
+/* Summary */
+.summary-desc{font-size:14px;color:var(--text-muted);margin-bottom:16px;line-height:1.7}
+
+/* Severity badges */
+.severity-badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:10px;font-weight:600;color:#030711;text-transform:uppercase;letter-spacing:0.5px}
+
+/* Vuln table */
+.vuln-table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
+.vuln-table th{text-align:left;padding:10px 12px;background:rgba(255,255,255,0.04);color:var(--text-dim);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:0.08em}
+.vuln-table th:first-child{border-radius:var(--radius) 0 0 0}
+.vuln-table th:last-child{border-radius:0 var(--radius) 0 0}
+.vuln-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04)}
+.vuln-table tr:last-child td{border-bottom:none}
+.vuln-table tr:hover td{background:rgba(255,255,255,0.02)}
+.vuln-title{font-weight:500}
+.vuln-file{font-size:12px;color:var(--text-dim)}
+.vuln-file code{background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;font-size:11px;font-family:var(--mono)}
+
+/* Vuln cards */
+.vuln-card{border:1px solid var(--card-border);border-radius:var(--radius);padding:16px;margin-bottom:12px;background:rgba(255,255,255,0.01)}
+.vuln-card-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.vuln-card-title{font-weight:600;font-size:14px}
+.vuln-card-location{margin-bottom:8px}
+.vuln-card-location code{background:rgba(255,255,255,0.05);padding:2px 8px;border-radius:4px;font-size:12px;color:var(--purple);font-family:var(--mono)}
+.vuln-card p{font-size:13px;color:var(--text-muted);margin-bottom:8px}
+.vuln-rec{font-size:13px;color:var(--accent);padding:12px;background:rgba(var(--accent-rgb),0.04);border:1px solid rgba(var(--accent-rgb),0.1);border-radius:8px;margin-top:8px}
+.code-block{margin:8px 0}
+.code-block pre{background:rgba(0,0,0,0.4);color:#e2e8f0;padding:14px;border-radius:8px;overflow-x:auto;font-size:12px;line-height:1.5;font-family:var(--mono);border:1px solid rgba(255,255,255,0.04)}
+
+/* Threats */
+.threat-section{margin-bottom:20px}
+.threat-section-title{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:12px}
+.threat-card{border:1px solid var(--card-border);border-radius:var(--radius);padding:16px;margin-bottom:10px;background:rgba(255,255,255,0.01)}
+.threat-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.threat-card-name{font-weight:600;font-size:14px}
+.threat-mitigated{font-size:11px;color:var(--accent);font-weight:600;padding:2px 10px;border-radius:99px;background:rgba(var(--accent-rgb),0.08);border:1px solid rgba(var(--accent-rgb),0.15)}
+.threat-vuln-count{font-size:11px;color:var(--red);font-weight:600;padding:2px 10px;border-radius:99px;background:rgba(var(--red-rgb),0.08);border:1px solid rgba(var(--red-rgb),0.15)}
+.threat-card p{font-size:13px;color:var(--text-muted);margin-bottom:10px}
+.threat-meta{font-size:12px;color:var(--text-dim)}
+.threat-meta div{margin-bottom:4px}
+.threat-meta strong{color:var(--text-muted)}
+
+/* Risk Assessment */
+.ra-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.ra-card{padding:16px;background:rgba(255,255,255,0.02);border-radius:10px;border:1px solid rgba(255,255,255,0.04)}
+.ra-card-label{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:8px}
+.ra-card-value{font-size:16px;font-weight:700}
+.ra-criticality{color:var(--amber)}
+.ra-card-tags{display:flex;flex-wrap:wrap;gap:4px}
+.muted{color:var(--text-dim);font-size:12px}
+
+/* Recommendations */
+.rec-summary-bar{margin-bottom:20px}
+.rec-summary-text{font-size:13px;color:var(--text-muted);margin-bottom:8px;display:flex;justify-content:space-between}
+.rec-bar-outer{height:6px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden}
+.rec-bar-inner{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:99px}
+.rec-category-card{margin-bottom:20px}
+.rec-category-title{font-family:var(--mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);margin-bottom:8px}
+.rec-row{padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+.rec-row:last-child{border-bottom:none}
+.rec-row-header{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rec-row-title{font-weight:500;font-size:13px;flex:1}
+.rec-status-badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:600}
+.rec-implemented{background:rgba(var(--accent-rgb),0.1);color:var(--accent);border:1px solid rgba(var(--accent-rgb),0.2)}
+.rec-partial{background:rgba(var(--amber-rgb),0.1);color:var(--amber);border:1px solid rgba(var(--amber-rgb),0.2)}
+.rec-missing{background:rgba(var(--red-rgb),0.1);color:var(--red);border:1px solid rgba(var(--red-rgb),0.2)}
+.urgency{font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px}
+.urgency-high{background:rgba(var(--red-rgb),0.1);color:var(--red);border:1px solid rgba(var(--red-rgb),0.15)}
+.urgency-medium{background:rgba(var(--amber-rgb),0.1);color:var(--amber);border:1px solid rgba(var(--amber-rgb),0.15)}
+.urgency-low{background:rgba(var(--accent-rgb),0.06);color:var(--accent);border:1px solid rgba(var(--accent-rgb),0.1)}
+.rec-scenario{font-size:12px;color:var(--text-dim);margin-top:4px;font-style:italic}
+
+.af-list{margin-top:8px;font-size:12px}
+.af-item{padding:3px 0;color:var(--text-dim)}
+.af-item code{background:rgba(255,255,255,0.05);padding:1px 5px;border-radius:3px;font-size:11px;font-family:var(--mono)}
+.af-enforced{color:var(--accent)}
+.af-not-enforced{color:var(--red)}
+
+/* Info columns */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.info-col ul{padding-left:20px;font-size:13px;color:var(--text-muted)}
+.info-col li{margin-bottom:6px}
+
+/* Footer */
+.report-footer{text-align:center;padding:32px;color:var(--text-dim);font-size:12px;margin-top:20px;position:relative;z-index:2}
+.report-footer a{color:var(--accent);text-decoration:none}
+
+/* Resolved items */
+.resolved-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px}
+.resolved-item:last-child{border-bottom:none}
+.resolved-title{font-weight:500;flex:1}
+.resolved-file{background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;font-size:11px;font-family:var(--mono);color:var(--text-dim)}
+
+@media print{
+  body{background:#030711!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .mesh,.noise{display:none}
+  .severity-badge,.rec-status-badge,.urgency,.threat-mitigated,.threat-vuln-count{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  section{break-inside:avoid}
+}
+@media(max-width:700px){
+  .stats-bar{grid-template-columns:repeat(2,1fr)}
+  .ra-grid{grid-template-columns:1fr}
+  .info-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="mesh">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+</div>
+<div class="noise"></div>
+
+<div class="report-header">
+    <svg width="200" height="54" viewBox="0 0 600 160" xmlns="http://www.w3.org/2000/svg">
+        <text x="300" y="115" font-family="Sora,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-weight="600" font-size="120" text-anchor="middle">
+            <tspan fill="#41DC7A">AR</tspan><tspan dx="2" fill="#FFFFFF">K</tspan><tspan dx="2" fill="#FFFFFF">O</tspan>
+        </text>
+    </svg>
+    <div class="report-project">coffeeandshwarma</div>
+    <div class="report-date">February 27, 2026 at 02:16 UTC &middot; 1m 11s</div>
+    <div class="header-line"></div>
+</div>
+
+<div class="container">
+
+    <div class="stats-bar">
+        <div class="stat-card">
+            <div class="stat-value critical">1</div>
+            <div class="stat-label">Vulnerabilities</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value critical">0</div>
+            <div class="stat-label">Critical</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value amber">0</div>
+            <div class="stat-label">High</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value accent">12%</div>
+            <div class="stat-label">Controls Secured</div>
+        </div>
+    </div>
+
+    <section>
+                <h2>Risk Assessment</h2>
+                <div class="ra-grid">
+                    <div class="ra-card">
+                        <div class="ra-card-label">Criticality</div>
+                        <div class="ra-card-value ra-criticality">BUSINESS SUPPORT</div>
+                    </div>
+                    <div class="ra-card">
+                        <div class="ra-card-label">Sensitive Data Types</div>
+                        <div class="ra-card-tags"><span class="tag tag-risk">PII (Personal Info)</span></div>
+                    </div>
+                    <div class="ra-card">
+                        <div class="ra-card-label">Application Flows</div>
+                        <div class="ra-card-tags"><span class="tag">File Upload</span></div>
+                    </div>
+                    <div class="ra-card">
+                        <div class="ra-card-label">Compliance</div>
+                        <div class="ra-card-tags"><span class="tag tag-compliance">CCPA</span><span class="tag tag-compliance">GDPR</span></div>
+                    </div>
+                </div>
+            </section>
+
+    <section>
+        <h2>Application Summary</h2>
+        <p class="summary-desc">A static web application displaying food menu items (shawarma and coffee) with client-side filtering and copy-to-clipboard functionality. No backend services, authentication, or data persistence detected.</p>
+        <h3>Technology Stack</h3>
+        <div style="margin-bottom:16px"><span class="tag">HTML5</span><span class="tag">JavaScript (vanilla)</span><span class="tag">YAML (configuration)</span></div>
+        <div class="info-grid" style="margin-top:16px"><div class="info-col">
+                <h3>Data Flows</h3>
+                <ul><li>Data enters: Static HTML content embedded in page markup</li><li>Data is processed: Client-side JavaScript filtering and DOM manipulation</li><li>Data is stored: Browser memory only (no persistence layer)</li><li>Data leaves: No external data transmission detected</li></ul>
+            </div><div class="info-col">
+                <h3>Attack Surface</h3>
+                <ul><li>File upload handler (1 detected) - potential vector for malicious file injection</li><li>Client-side JavaScript in filter.js - vulnerable to DOM-based XSS if user input is unsanitized</li><li>Static HTML files - vulnerable to HTML injection if content is dynamically generated</li><li>No CSRF protection mechanisms evident</li></ul>
+            </div></div>
+    </section>
+
+    <section>
+        <h2>Threat Model</h2>
+        <div class="threat-section">
+                <h3 class="threat-section-title">Worst Case Scenarios</h3>
+                <div class="threat-card">
+                    <div class="threat-card-header">
+                        <span class="threat-card-name">Malicious File Upload Leading to Server Compromise</span>
+                        <span class="threat-mitigated">Mitigated</span>
+                    </div>
+                    <p>Attacker exploits the file upload handler to upload malicious scripts (web shells, backdoors) that execute on the server, potentially gaining full system access and using the compromised server as a pivot point for lateral movement in the network infrastructure.</p>
+                    <div class="threat-meta">
+                        <div><strong>Impact:</strong> Complete server compromise, potential network infiltration, data theft from connected systems, service disruption, legal liability, and severe reputational damage. Could lead to hosting provider account suspension.</div>
+                        <div><strong>Attack Vector:</strong> Upload malicious PHP, JSP, or other executable files through the file upload functionality, bypassing any client-side validation, then access the uploaded files directly via URL to execute server-side code.</div>
+                    </div>
+                </div><div class="threat-card">
+                    <div class="threat-card-header">
+                        <span class="threat-card-name">DOM-Based XSS Leading to Account Takeover Campaign</span>
+                        <span class="threat-mitigated">Mitigated</span>
+                    </div>
+                    <p>Attacker crafts malicious URLs containing JavaScript payloads that exploit unsanitized input in the filtering functionality. When victims visit these URLs, the malicious script executes, stealing session cookies, credentials, or performing actions on behalf of users across multiple sites.</p>
+                    <div class="threat-meta">
+                        <div><strong>Impact:</strong> Mass credential theft, unauthorized actions performed on behalf of users, potential financial fraud if users are redirected to banking sites, widespread privacy violations, and significant reputational damage affecting user trust.</div>
+                        <div><strong>Attack Vector:</strong> Craft URLs with malicious JavaScript in filter parameters, distribute via phishing emails or social media, exploit the client-side filtering logic to execute arbitrary JavaScript in victims&#x27; browsers.</div>
+                    </div>
+                </div><div class="threat-card">
+                    <div class="threat-card-header">
+                        <span class="threat-card-name">Supply Chain Attack via Compromised Dependencies</span>
+                        <span class="threat-vuln-count">1 vulnerabilities found</span>
+                    </div>
+                    <p>If the application uses any external JavaScript libraries or the YAML configuration references external resources, attackers could compromise these dependencies to inject malicious code that affects all users of the application.</p>
+                    <div class="threat-meta">
+                        <div><strong>Impact:</strong> Widespread malware distribution to all application users, potential cryptocurrency mining, credential harvesting, or redirection to malicious sites. Could affect thousands of users simultaneously and cause severe reputational damage.</div>
+                        <div><strong>Attack Vector:</strong> Compromise external CDN resources, JavaScript libraries, or configuration files that the application depends on, injecting malicious code that executes for all users.</div>
+                    </div>
+                </div>
+            </div><div class="threat-section">
+                <h3 class="threat-section-title">Likely Attack Scenarios</h3>
+                <div class="threat-card">
+                    <div class="threat-card-header">
+                        <span class="threat-card-name">Client-Side XSS via Filter Manipulation</span>
+                        <span class="threat-mitigated">Mitigated</span>
+                    </div>
+                    <p>Attacker injects malicious JavaScript through the filtering functionality by manipulating URL parameters or form inputs that are processed by filter.js without proper sanitization.</p>
+                    <div class="threat-meta">
+                        <div><strong>Impact:</strong> Session hijacking, credential theft, defacement of the website for individual users, potential redirection to malicious sites. Limited to individual victims but could be automated for scale.</div>
+                        <div><strong>Attack Vector:</strong> Manipulate filter parameters in URLs or exploit any user input fields processed by the JavaScript filtering logic, injecting script tags or event handlers that execute in the DOM.</div>
+                    </div>
+                </div><div class="threat-card">
+                    <div class="threat-card-header">
+                        <span class="threat-card-name">Malicious File Upload</span>
+                        <span class="threat-mitigated">Mitigated</span>
+                    </div>
+                    <p>Attacker uploads malicious files through the detected file upload handler, potentially including executable scripts, malware, or inappropriate content that could be served to other users.</p>
+                    <div class="threat-meta">
+                        <div><strong>Impact:</strong> Server resource consumption, potential malware distribution, website defacement, hosting provider violations, and cleanup costs. Could lead to site takedown or blacklisting.</div>
+                        <div><strong>Attack Vector:</strong> Upload files with malicious content, executable extensions, or oversized files to consume server resources, bypassing any client-side validation through direct HTTP requests.</div>
+                    </div>
+                </div><div class="threat-card">
+                    <div class="threat-card-header">
+                        <span class="threat-card-name">Content Injection and Defacement</span>
+                        <span class="threat-mitigated">Mitigated</span>
+                    </div>
+                    <p>If the static HTML content is generated dynamically or if there are any content management features, attackers could inject malicious HTML or JavaScript to deface the website or mislead users.</p>
+                    <div class="threat-meta">
+                        <div><strong>Impact:</strong> Website defacement, loss of credibility, potential phishing attacks against users, SEO damage, and cleanup costs. Could affect business reputation and user trust.</div>
+                        <div><strong>Attack Vector:</strong> Exploit any content management functionality or dynamic HTML generation to inject malicious HTML, JavaScript, or misleading content into the menu display.</div>
+                    </div>
+                </div><div class="threat-card">
+                    <div class="threat-card-header">
+                        <span class="threat-card-name">Clipboard Hijacking Attack</span>
+                        <span class="threat-mitigated">Mitigated</span>
+                    </div>
+                    <p>Attacker exploits the copy-to-clipboard functionality to inject malicious content into users&#x27; clipboards, potentially including malicious commands, URLs, or sensitive data harvesting scripts.</p>
+                    <div class="threat-meta">
+                        <div><strong>Impact:</strong> Users unknowingly paste malicious commands or URLs, potential credential theft if users paste into sensitive applications, privacy violations, and user trust erosion.</div>
+                        <div><strong>Attack Vector:</strong> Manipulate the clipboard functionality through XSS or direct JavaScript exploitation to copy malicious content instead of intended menu items, targeting users who frequently use copy-paste operations.</div>
+                    </div>
+                </div><div class="threat-card">
+                    <div class="threat-card-header">
+                        <span class="threat-card-name">YAML Configuration Manipulation</span>
+                        <span class="threat-mitigated">Mitigated</span>
+                    </div>
+                    <p>If the YAML configuration is accessible or modifiable, attackers could alter menu content, inject malicious data, or cause application errors through malformed configuration.</p>
+                    <div class="threat-meta">
+                        <div><strong>Impact:</strong> Application malfunction, display of inappropriate content, potential code execution if YAML is processed unsafely, and service disruption requiring manual intervention to restore.</div>
+                        <div><strong>Attack Vector:</strong> Access and modify YAML configuration files through directory traversal, file upload vulnerabilities, or if configuration files are stored in web-accessible locations.</div>
+                    </div>
+                </div>
+            </div>
+    </section>
+
+    <section>
+                <h2>Security Recommendations</h2>
+                <div class="rec-summary-bar">
+                    <div class="rec-summary-text">
+                        <span>1 of 8 controls secured</span>
+                        <span>12%</span>
+                    </div>
+                    <div class="rec-bar-outer"><div class="rec-bar-inner" style="width:12%"></div></div>
+                </div>
+                <div class="rec-category-card">
+                    <div class="rec-category-title">Protecting Data</div>
+                    <div class="rec-row">
+                        <div class="rec-row-header">
+                            <span class="rec-status-badge rec-missing">Missing</span>
+                            <span class="rec-row-title">Encrypt Sensitive Data at Rest</span>
+                            <span class="urgency urgency-high">Fix Now</span>
+                        </div>
+                        
+                        
+                    </div><div class="rec-row">
+                        <div class="rec-row-header">
+                            <span class="rec-status-badge rec-missing">Missing</span>
+                            <span class="rec-row-title">Mask Sensitive Data in Logs and Error Messages</span>
+                            <span class="urgency urgency-medium">Fix Soon</span>
+                        </div>
+                        
+                        
+                    </div><div class="rec-row">
+                        <div class="rec-row-header">
+                            <span class="rec-status-badge rec-missing">Missing</span>
+                            <span class="rec-row-title">Implement Data Retention and Deletion Policies</span>
+                            <span class="urgency urgency-medium">Fix Soon</span>
+                        </div>
+                        
+                        
+                    </div>
+                </div><div class="rec-category-card">
+                    <div class="rec-category-title">File Uploads</div>
+                    <div class="rec-row">
+                        <div class="rec-row-header">
+                            <span class="rec-status-badge rec-missing">Missing</span>
+                            <span class="rec-row-title">Validate File Uploads Thoroughly</span>
+                            <span class="urgency urgency-medium">Fix Soon</span>
+                        </div>
+                        
+                        
+                    </div><div class="rec-row">
+                        <div class="rec-row-header">
+                            <span class="rec-status-badge rec-missing">Missing</span>
+                            <span class="rec-row-title">Implement Virus Scanning for File Uploads</span>
+                            <span class="urgency urgency-medium">Fix Soon</span>
+                        </div>
+                        
+                        
+                    </div>
+                </div><div class="rec-category-card">
+                    <div class="rec-category-title">Display Safety</div>
+                    <div class="rec-row">
+                        <div class="rec-row-header">
+                            <span class="rec-status-badge rec-implemented">Secure</span>
+                            <span class="rec-row-title">Other users could see a fake version of your app</span>
+                            
+                        </div>
+                        <div class="rec-scenario">An attacker injects JavaScript that steals cookies and session tokens from your users</div>
+                        <div class="af-list"><div class="af-item af-enforced">&#10003; <code>js/filter.js:142</code> - Uses textContent instead of innerHTML for notification messages</div><div class="af-item af-enforced">&#10003; <code>js/filter.js:80</code> - Uses textContent for no-results message display</div></div>
+                    </div>
+                </div><div class="rec-category-card">
+                    <div class="rec-category-title">App Settings</div>
+                    <div class="rec-row">
+                        <div class="rec-row-header">
+                            <span class="rec-status-badge rec-missing">Missing</span>
+                            <span class="rec-row-title">Implement Security Headers</span>
+                            <span class="urgency urgency-medium">Fix Soon</span>
+                        </div>
+                        
+                        
+                    </div>
+                </div><div class="rec-category-card">
+                    <div class="rec-category-title">Error Handling</div>
+                    <div class="rec-row">
+                        <div class="rec-row-header">
+                            <span class="rec-status-badge rec-missing">Missing</span>
+                            <span class="rec-row-title">Implement Safe Error Handling</span>
+                            <span class="urgency urgency-medium">Fix Soon</span>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+            </section>
+
+    <section>
+        <h2>Open Vulnerabilities (1)</h2>
+        <table class="vuln-table"><thead><tr><th>Severity</th><th>Title</th><th>Location</th></tr></thead><tbody><tr>
+                <td><span class="severity-badge" style="background:#818CF8">MEDIUM</span></td>
+                <td class="vuln-title">Unpinned GitHub Action Version - Supply Chain Attack Vector</td>
+                <td class="vuln-file"><code>.github/workflows/azure-static-web-apps-gray-field-0e2a52a1e.yml:24</code></td>
+            </tr></tbody></table>
+    </section>
+
+    <section><h2>Vulnerability Details</h2><div class="vuln-card">
+                <div class="vuln-card-header">
+                    <span class="severity-badge" style="background:#818CF8">MEDIUM</span>
+                    <span class="vuln-card-title">Unpinned GitHub Action Version - Supply Chain Attack Vector</span>
+                </div>
+                <div class="vuln-card-location"><code>.github/workflows/azure-static-web-apps-gray-field-0e2a52a1e.yml:24</code></div>
+                <p>The Azure/static-web-apps-deploy action uses @v1 tag instead of pinned SHA, allowing automatic updates that could introduce malicious code if the action repository is compromised.</p>
+                
+                <div class="vuln-rec"><strong>Recommendation:</strong> Pin to specific SHA: uses: Azure/static-web-apps-deploy@1a947af9992250f3bc2e68ad0754c0b0c11566c9</div>
+            </div></section>
+
+    
+
+    
+
+</div>
+
+<div class="report-footer">
+    <svg width="80" height="22" viewBox="0 0 600 160" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-bottom:2px">
+        <text x="300" y="115" font-family="Sora,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-weight="600" font-size="120" text-anchor="middle">
+            <tspan fill="#41DC7A">AR</tspan><tspan dx="2" fill="#FFFFFF">K</tspan><tspan dx="2" fill="#FFFFFF">O</tspan>
+        </text>
+    </svg>
+    <span style="margin-left:6px">AI-powered security analysis</span>
+</div>
+
+</body>
+</html>
